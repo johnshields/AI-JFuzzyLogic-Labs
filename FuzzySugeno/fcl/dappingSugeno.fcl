@@ -1,0 +1,44 @@
+FUNCTION_BLOCK getDappingLevel	// Maps to a method
+
+    VAR_INPUT	// input params to a method
+        wind : REAL;
+        temperature : REAL;
+    END_VAR
+
+    VAR_OUTPUT  // return type from method
+        dapping : REAL;
+    END_VAR
+
+    FUZZIFY wind
+         TERM calm := 2;
+         TERM fresh := 6;
+         TERM stormy := 10;
+    END_FUZZIFY
+
+    FUZZIFY temperature
+         TERM low := 5;
+         TERM average := 12;
+         TERM high := 17;
+    END_FUZZIFY
+
+    DEFUZZIFY dapping //Method body....
+         TERM poor := 25;
+         TERM mediocre := 50;
+         TERM excellent := 75;
+         METHOD : COGS;
+         DEFAULT := 5;
+    END_DEFUZZIFY
+
+    // Inference rules
+    RULEBLOCK No1
+    	AND : MIN;	// Use 'min' for 'and'
+    	ACT : MIN;	// Use 'min' activation method
+    	ACCU : MAX;	// Use 'max' accumulation method
+
+    	RULE 1 : IF wind IS stormy OR temperature IS low THEN dapping IS poor;
+        RULE 2 : IF wind IS fresh AND temperature IS average THEN dapping IS mediocre;
+        RULE 3 : IF wind IS stormy OR temperature IS NOT low THEN dapping IS excellent;
+        RULE 4 : IF wind IS calm AND temperature IS NOT average THEN dapping IS poor;
+    END_RULEBLOCK
+
+END_FUNCTION_BLOCK
